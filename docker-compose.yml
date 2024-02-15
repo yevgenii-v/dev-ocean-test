@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+
+    dev_ocean_api:
+        image: dev_ocean_api:latest
+        restart: always
+        volumes:
+            - ./:/var/www/html
+        networks:
+            - dev_ocean_networks
+
+    dev_ocean_db:
+        image: mysql:8
+        restart: always
+        volumes:
+            - dev_ocean_db_storage:/var/lib/mysql
+        networks:
+            - dev_ocean_networks
+
+    dev_ocean_nginx_api:
+        image: nginx:alpine
+        restart: always
+        volumes:
+            - ./docker/nginx/api.conf:/etc/nginx/conf.d/default.conf
+            - ./:/var/www/html
+        networks:
+            - dev_ocean_networks
+
+    dev_ocean_swagger_ui:
+        image: swaggerapi/swagger-ui
+        networks:
+            - dev_ocean_networks
