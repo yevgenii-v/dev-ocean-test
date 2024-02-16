@@ -12,7 +12,7 @@ RUN apk add --no-cache linux-headers
 RUN apk add \
     libpq-dev \
     libpng-dev \
-    postgresql-dev \
+    mysql-dev \
     curl \
     bash \
     autoconf \
@@ -29,7 +29,7 @@ RUN docker-php-ext-configure gd \
     && docker-php-ext-install gd
 
 RUN docker-php-ext-install sockets
-RUN docker-php-ext-install pdo_pgsql
+RUN docker-php-ext-install pdo_mysql
 RUN docker-php-ext-install pcntl
 RUN docker-php-ext-install zip
 RUN docker-php-ext-install bcmath

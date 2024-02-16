@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Authentication\AuthenticationController;
+use App\Http\Middleware\GuestMiddleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,6 +19,18 @@ Route::get('swagger', function () {
     return response()->file(public_path() . '/swagger.json');
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['prefix' => 'v1'], function () {
+    Route::name('auth.')->group(function () {
+
+        Route::middleware(GuestMiddleware::class)->group(function () {
+            Route::post('/register', [AuthenticationController::class, 'register'])->name('register');
+            Route::post('/login', [AuthenticationController::class, 'login'])->name('login');
+        });
+
+        Route::middleware('auth:api')->group(function () {
+            Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
+            Route::get('/profile', [AuthenticationController::class, 'profile'])->name('profile');
+        });
+    });
+
 });
