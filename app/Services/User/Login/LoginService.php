@@ -9,7 +9,7 @@ use Illuminate\Pipeline\Pipeline;
 
 class LoginService
 {
-    const HANDLERS = [
+    protected const HANDLERS = [
         IsCredentialsValidHandler::class,
         SetAuthorizedUserHandler::class,
         SetAccessTokenHandler::class,

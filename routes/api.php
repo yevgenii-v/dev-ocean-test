@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Authentication\AuthenticationController;
+use App\Http\Controllers\PostController;
 use App\Http\Middleware\GuestMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,6 @@ Route::get('swagger', function () {
 });
 
 Route::group(['prefix' => 'v1'], function () {
-    Route::name('auth.')->group(function () {
 
         Route::middleware(GuestMiddleware::class)->group(function () {
             Route::post('/register', [AuthenticationController::class, 'register'])->name('register');
@@ -30,7 +30,20 @@ Route::group(['prefix' => 'v1'], function () {
         Route::middleware('auth:api')->group(function () {
             Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
             Route::get('/profile', [AuthenticationController::class, 'profile'])->name('profile');
-        });
-    });
 
+            Route::apiResource('posts', PostController::class)->only([
+                'store', 'update', 'destroy',
+            ]);
+
+            Route::post('posts/{post}/soft-delete', [PostController::class, 'softDelete'])
+                ->name('posts.soft-delete');
+            Route::post('posts/{post}/restore', [PostController::class, 'restore'])
+                ->name('posts.restore');
+            Route::post('posts/{post}/publish', [PostController::class, 'publish'])
+                ->name('posts.publish');
+            Route::post('posts/{post}/unpublish', [PostController::class, 'unpublish'])
+                ->name('posts.unpublish');
+        });
+
+    Route::apiResource('posts', PostController::class)->except(['store', 'update', 'destroy']);
 });
