@@ -30,6 +30,17 @@ class UserAuthService
         return auth()->id();
     }
 
+    /**
+     * @return int|string|null
+     */
+    public function getUserIdByToken(): int|string|null
+    {
+        return auth('api')->id();
+    }
+
+    /**
+     * @return UserIterator
+     */
     public function getUserByBearerToken(): UserIterator
     {
         $user = auth('api')->user();
