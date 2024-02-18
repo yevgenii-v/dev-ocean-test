@@ -3,11 +3,14 @@
 namespace App\Repositories\Post;
 
 use App\Models\Post;
+use App\Repositories\Comment\Iterators\CommentIterator;
 use App\Repositories\Post\Iterators\PostIterator;
+use App\Repositories\Post\Iterators\PostWithCommentsIterator;
 use App\Services\User\UserAuthService;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class PostRepository
 {
@@ -25,8 +28,7 @@ class PostRepository
      */
     public function get(int $lastId): Collection
     {
-        $collection = Post::withoutTrashed()
-            ->with(['user'])
+        $collection = Post::with(['user'])
             ->where('id', '>', $lastId)
             ->where('published_at', '<>', null)
             ->take(100)
@@ -75,12 +77,10 @@ class PostRepository
      * @param int $id
      * @return PostIterator|null
      */
-    public function getWithoutTrashedById(int $id): ?PostIterator
+    public function getById(int $id): ?PostIterator
     {
-        $post = Post::withoutTrashed()
-            ->with('user')
+        $post = Post::with(['user'])
             ->whereId($id)
-            ->where('published_at', '<>', null)
             ->first();
 
         if ($post === null) {
@@ -88,6 +88,33 @@ class PostRepository
         }
 
         return new PostIterator($post);
+    }
+
+    /**
+     * @param int $id
+     * @return PostWithCommentsIterator|null
+     */
+    public function getWithCommentsById(int $id): ?PostWithCommentsIterator
+    {
+        $post = Post::with(
+            [
+                'user',
+                'comments' => function ($query) use ($id) {
+                    $query->where('parent_id', '=', null);
+                    $query->with(['recursiveComments' => function ($query) use ($id) {
+                        $query->where('post_id', '=', $id);
+                    }]);
+                }
+            ]
+        )->whereId($id)
+            ->where('published_at', '<>', null)
+            ->first();
+
+        if ($post === null) {
+            return null;
+        }
+
+        return new PostWithCommentsIterator($post);
     }
 
     /**
@@ -119,17 +146,6 @@ class PostRepository
     public function softDelete(int $id): void
     {
         Post::whereId($id)->delete();
-    }
-
-    /**
-     * @param int $id
-     * @return bool
-     */
-    public function isTrashed(int $id): bool
-    {
-        return Post::onlyTrashed()
-            ->where('id', '=', $id)
-            ->exists();
     }
 
     /**

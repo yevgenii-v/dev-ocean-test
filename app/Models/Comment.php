@@ -6,30 +6,37 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
-class Post extends Model
+class Comment extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
     public $timestamps = [
         'created_at',
-        'published_at',
-        'deleted_at'
-    ];
-
-    protected $with = [
-        'user',
     ];
 
     public const UPDATED_AT = null;
 
     protected $fillable = [
-        'title',
-        'description',
+        'parent_id',
+        'post_id',
         'user_id',
+        'body',
     ];
+
+    protected $with = [
+        'user',
+        'recursiveComments',
+    ];
+
+    /**
+     * @return BelongsTo
+     */
+    public function post(): BelongsTo
+    {
+        return $this->belongsTo(Post::class);
+    }
 
     /**
      * @return BelongsTo
@@ -44,6 +51,14 @@ class Post extends Model
      */
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(self::class, 'parent_id', 'id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function recursiveComments(): HasMany
+    {
+        return $this->comments();
     }
 }
