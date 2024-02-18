@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Authentication\AuthenticationController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Middleware\GuestMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,9 @@ Route::group(['prefix' => 'v1'], function () {
             Route::apiResource('posts', PostController::class)->only([
                 'store', 'update', 'destroy',
             ]);
+
+            Route::apiResource('comments', CommentController::class)
+                ->only('store');
 
             Route::post('posts/{post}/soft-delete', [PostController::class, 'softDelete'])
                 ->name('posts.soft-delete');

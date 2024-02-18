@@ -13,6 +13,8 @@ use App\Http\Requests\Post\PostUnpublishRequest;
 use App\Http\Requests\Post\PostUpdateRequest;
 use App\Http\Resources\ExceptionResource;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\PostWithCommentsResource;
+use App\Models\Post;
 use App\Repositories\Post\PostStoreDTO;
 use App\Repositories\Post\PostUpdateDTO;
 use App\Services\Post\PostService;
@@ -73,14 +75,14 @@ class PostController extends Controller
     {
         try {
             $validate = $request->validated();
-            $service = $this->postService->getById($validate['id']);
+            $service = $this->postService->getWithCommentsById($validate['id']);
         } catch (Exception $e) {
             return (new ExceptionResource($e))
                 ->response()
                 ->setStatusCode($e->getCode());
         }
 
-        $resource = new PostResource($service);
+        $resource = new PostWithCommentsResource($service);
 
         return $resource->response()->setStatusCode(200);
     }
@@ -196,21 +198,19 @@ class PostController extends Controller
      * Unpublish the post that belongs to the current user.
      *
      * @param PostUnpublishRequest $request
-     * @return JsonResponse
+     * @return Response|JsonResponse
      */
-    public function unpublish(PostUnpublishRequest $request): JsonResponse
+    public function unpublish(PostUnpublishRequest $request): Response|JsonResponse
     {
         try {
             $validated = $request->validated();
-            $service = $this->postService->unpublishForUser($validated['id']);
+            $this->postService->unpublishForUser($validated['id']);
         } catch (Exception $e) {
             return (new ExceptionResource($e))
                 ->response()
                 ->setStatusCode($e->getCode());
         }
 
-        $resource = new PostResource($service);
-
-        return $resource->response()->setStatusCode(200);
+        return response()->noContent()->setStatusCode(204);
     }
 }

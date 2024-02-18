@@ -4,6 +4,7 @@ namespace App\Services\Post;
 
 use App\Models\Post;
 use App\Repositories\Post\Iterators\PostIterator;
+use App\Repositories\Post\Iterators\PostWithCommentsIterator;
 use App\Repositories\Post\PostRepository;
 use App\Repositories\Post\PostStoreDTO;
 use App\Repositories\Post\PostUpdateDTO;
@@ -36,19 +37,19 @@ class PostService
     {
         $postIterator = $this->postRepository->store($DTO);
 
-        return $this->postRepository->getWithoutTrashedById(
+        return $this->postRepository->getById(
             $postIterator->getId(),
         );
     }
 
     /**
      * @param int $id
-     * @return PostIterator
+     * @return PostWithCommentsIterator|null
      * @throws Exception
      */
-    public function getById(int $id): PostIterator
+    public function getWithCommentsById(int $id): ?PostWithCommentsIterator
     {
-        $post = $this->postRepository->getWithoutTrashedById($id);
+        $post = $this->postRepository->getWithCommentsById($id);
 
         if ($post === null) {
             throw new Exception('This post doesn\'t belong to current user or not exist.', 404);
@@ -64,16 +65,13 @@ class PostService
      */
     public function update(PostUpdateDTO $DTO): PostIterator
     {
-        if (
-            $this->postRepository->isTrashed($DTO->getId()) === true ||
-            $this->isPostBelongsToUser($DTO->getId()) === false
-        ) {
+        if ($this->isPostBelongsToUser($DTO->getId()) === false) {
             throw new Exception('This post doesn\'t belong to current user or not exist.', 404);
         }
 
         $this->postRepository->update($DTO);
 
-        return $this->postRepository->getWithoutTrashedById(
+        return $this->postRepository->getById(
             $DTO->getId()
         );
     }
@@ -95,10 +93,7 @@ class PostService
      */
     public function softDelete(int $id): void
     {
-        if (
-            $this->postRepository->isTrashed($id) === true ||
-            $this->isPostBelongsToUser($id) === false
-        ) {
+        if ($this->isPostBelongsToUser($id) === false) {
             throw new Exception('This post doesn\'t belong to current user or not exist.', 404);
         }
 
@@ -112,16 +107,13 @@ class PostService
      */
     public function restore(int $id): ?PostIterator
     {
-        if (
-            $this->postRepository->isTrashed($id) === false ||
-            $this->isPostBelongsToUser($id) === false
-        ) {
+        if ($this->isPostBelongsToUser($id) === false) {
             throw new Exception('This post doesn\'t belong to current user or not soft deleted.', 404);
         }
 
         $this->postRepository->restoreForUser($id);
 
-        return $this->postRepository->getWithoutTrashedById($id);
+        return $this->postRepository->getById($id);
     }
 
     /**
@@ -129,10 +121,7 @@ class PostService
      */
     public function publishForUser(int $id): ?PostIterator
     {
-        if (
-            $this->postRepository->isTrashed($id) === true ||
-            $this->isPostBelongsToUser($id) === false
-        ) {
+        if ($this->isPostBelongsToUser($id) === false) {
             throw new Exception('This post doesn\'t belong to current user or not exist.', 404);
         }
 
@@ -142,18 +131,15 @@ class PostService
 
         $this->postRepository->publishForUser($id);
 
-        return $this->postRepository->getWithoutTrashedById($id);
+        return $this->postRepository->getById($id);
     }
 
     /**
      * @throws Exception
      */
-    public function unpublishForUser(int $id): ?PostIterator
+    public function unpublishForUser(int $id): void
     {
-        if (
-            $this->postRepository->isTrashed($id) === true ||
-            $this->isPostBelongsToUser($id) === false
-        ) {
+        if ($this->isPostBelongsToUser($id) === false) {
             throw new Exception('This post doesn\'t belong to current user or not exist.', 404);
         }
 
@@ -162,8 +148,6 @@ class PostService
         }
 
         $this->postRepository->unpublishForUser($id);
-
-        return $this->postRepository->getWithoutTrashedById($id);
     }
 
     /**
