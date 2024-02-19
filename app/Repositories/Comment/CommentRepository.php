@@ -40,4 +40,22 @@ class CommentRepository
                 ->first()
         );
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function isExists(int $id): bool
+    {
+        return Comment::whereId($id)->exists();
+    }
+
+    /**
+     * @param int $id
+     * @return void
+     */
+    public function forceDelete(int $id): void
+    {
+        Comment::whereId($id)->forceDelete();
+    }
 }

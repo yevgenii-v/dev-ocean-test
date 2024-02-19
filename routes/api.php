@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminCommentController;
+use App\Http\Controllers\Admin\AdminPostController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Authentication\AuthenticationController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
-use App\Http\Middleware\GuestMiddleware;
+use App\Http\Middleware\API\GuestMiddleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,7 +31,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/login', [AuthenticationController::class, 'login'])->name('login');
         });
 
-        Route::middleware('auth:api')->group(function () {
+        Route::middleware(['isUserBanned', 'auth:api'])->group(function () {
             Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
             Route::get('/profile', [AuthenticationController::class, 'profile'])->name('profile');
 
@@ -47,6 +50,23 @@ Route::group(['prefix' => 'v1'], function () {
                 ->name('posts.publish');
             Route::post('posts/{post}/unpublish', [PostController::class, 'unpublish'])
                 ->name('posts.unpublish');
+
+            Route::middleware(['isAdmin'])->group(function () {
+                Route::post('/admin/users/{user}/ban', [AdminUserController::class, 'ban'])
+                    ->name('admin.users.ban');
+                Route::post('/admin/users/{user}/restore', [AdminUserController::class, 'restore'])
+                    ->name('admin.users.restore');
+
+                Route::get('/admin/posts', [AdminPostController::class, 'index'])
+                    ->name('admin.posts.index');
+                Route::get('/admin/posts/{post}', [AdminPostController::class, 'show'])
+                    ->name('admin.posts.show');
+                Route::delete('/admin/posts/{post}', [AdminPostController::class, 'destroy'])
+                    ->name('admin.posts.destroy');
+
+                Route::delete('/admin/comments/{comment}', [AdminCommentController::class, 'destroy'])
+                    ->name('admin.comments.destroy');
+            });
         });
 
     Route::apiResource('posts', PostController::class)->except(['store', 'update', 'destroy']);

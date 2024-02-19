@@ -3,8 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Models\Comment;
-use App\Repositories\Comment\Iterators\ChildrenCommentIterator;
-use App\Repositories\Comment\Iterators\CommentIterator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

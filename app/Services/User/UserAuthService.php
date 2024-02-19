@@ -2,6 +2,9 @@
 
 namespace App\Services\User;
 
+use App\Enums\RoleEnum;
+use App\Models\User;
+use App\Repositories\User\Iterators\AdminUserIterator;
 use App\Repositories\User\Iterators\UserIterator;
 use App\Services\User\Login\LoginDTO;
 use Laravel\Passport\PersonalAccessTokenResult;
@@ -68,5 +71,40 @@ class UserAuthService
     public function getUserToken(): Token|TransientToken|null
     {
         return auth('api')->user()->token();
+    }
+
+    /**
+     * Check authenticated user's role.
+     *
+     * @param RoleEnum $role
+     * @return bool
+     */
+    public function isUserHasRole(RoleEnum $role): bool
+    {
+        /** @var User $user */
+        $user = auth('api')->user();
+
+        return $user
+            ->roles()
+            ->where('role_id', $role->value)
+            ->exists();
+    }
+
+    public function isUserBanned(): bool
+    {
+        /** @var User $user */
+        $user = auth('api')->user();
+
+        $userIterator = new AdminUserIterator((object)[
+            'id'            => $user->id,
+            'login'         => $user->login,
+            'email'         => $user->email,
+            'profile_photo' => $user->profilePhoto,
+            'created_at'    => $user->created_at,
+            'updated_at'    => $user->updated_at,
+            'is_banned'     => $user->is_banned,
+        ]);
+
+        return $userIterator->getIsBanned() === true;
     }
 }

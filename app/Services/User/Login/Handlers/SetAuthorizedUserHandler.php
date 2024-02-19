@@ -23,7 +23,7 @@ class SetAuthorizedUserHandler implements LoginInterface
      */
     public function handle(LoginDTO $DTO, Closure $next): LoginDTO
     {
-        $userIterator = $this->userRepository->findById(
+        $userIterator = $this->userRepository->getById(
             $this->userAuthService->getUserId()
         );
 
