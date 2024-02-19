@@ -43,7 +43,12 @@ class PostController extends Controller
         $validated = $request->validated();
         $service = $this->postService->pagination(...$validated);
 
+        $lastId = is_null($service->last()) ? 0 : $service->last()->getId();
+
         return PostResource::collection($service)
+            ->additional([
+                'lastId' => $lastId,
+            ])
             ->response()
             ->setStatusCode(200);
     }
@@ -117,7 +122,7 @@ class PostController extends Controller
      * @param PostDestroyRequest $request
      * @return JsonResponse|Response
      */
-    public function destroy(PostDestroyRequest $request): JsonResponse|Response
+    public function forceDelete(PostDestroyRequest $request): JsonResponse|Response
     {
         try {
             $validated = $request->validated();

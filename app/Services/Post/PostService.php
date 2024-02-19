@@ -30,6 +30,15 @@ class PostService
     }
 
     /**
+     * @param int $lastId
+     * @return Collection
+     */
+    public function paginationWithTrashed(int $lastId = 0): Collection
+    {
+        return $this->postRepository->getWithTrashed($lastId);
+    }
+
+    /**
      * @param PostStoreDTO $DTO
      * @return PostIterator
      */
@@ -53,6 +62,22 @@ class PostService
 
         if ($post === null) {
             throw new Exception('This post doesn\'t belong to current user or not exist.', 404);
+        }
+
+        return $post;
+    }
+
+    /**
+     * @param int $id
+     * @return PostWithCommentsIterator|null
+     * @throws Exception
+     */
+    public function getTrashedWithCommentsById(int $id): ?PostWithCommentsIterator
+    {
+        $post = $this->postRepository->getTrashedWithCommentsById($id);
+
+        if ($post === null) {
+            throw new Exception('This post doesn\'t not exist.', 404);
         }
 
         return $post;
@@ -86,6 +111,20 @@ class PostService
         }
 
         $this->postRepository->forceDelete($id);
+    }
+
+    /**
+     * @param int $id
+     * @return void
+     * @throws Exception
+     */
+    public function forceDeleteWithTrashed(int $id): void
+    {
+        if ($this->postRepository->isExistsWithTrashed($id) === false) {
+            throw new Exception('This post doesn\'t  exist.', 404);
+        }
+
+        $this->postRepository->forceDeleteWithTrashed($id);
     }
 
     /**

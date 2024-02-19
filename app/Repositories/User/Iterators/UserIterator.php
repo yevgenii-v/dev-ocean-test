@@ -8,7 +8,7 @@ class UserIterator
     protected string $login;
     protected string $email;
     protected ?string $profilePhoto;
-    protected string $createdAt;
+    protected string|null $createdAt;
 
     public function __construct(object $data)
     {
