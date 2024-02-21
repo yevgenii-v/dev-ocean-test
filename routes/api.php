@@ -35,8 +35,10 @@ Route::group(['prefix' => 'v1'], function () {
             Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
             Route::get('/profile', [AuthenticationController::class, 'profile'])->name('profile');
 
+            Route::delete('/posts/{post}', [PostController::class, 'forceDelete'])
+                ->name('posts.force-delete');
             Route::apiResource('posts', PostController::class)->only([
-                'store', 'update', 'destroy',
+                'store', 'update'
             ]);
 
             Route::apiResource('comments', CommentController::class)
@@ -61,13 +63,13 @@ Route::group(['prefix' => 'v1'], function () {
                     ->name('admin.posts.index');
                 Route::get('/admin/posts/{post}', [AdminPostController::class, 'show'])
                     ->name('admin.posts.show');
-                Route::delete('/admin/posts/{post}', [AdminPostController::class, 'destroy'])
-                    ->name('admin.posts.destroy');
+                Route::delete('/admin/posts/{post}', [AdminPostController::class, 'forceDelete'])
+                    ->name('admin.posts.force-delete');
 
-                Route::delete('/admin/comments/{comment}', [AdminCommentController::class, 'destroy'])
-                    ->name('admin.comments.destroy');
+                Route::delete('/admin/comments/{comment}', [AdminCommentController::class, 'forceDelete'])
+                    ->name('admin.comments.force-delete');
             });
         });
 
-    Route::apiResource('posts', PostController::class)->except(['store', 'update', 'destroy']);
+    Route::apiResource('posts', PostController::class)->only(['index', 'show']);
 });

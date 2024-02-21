@@ -22,7 +22,7 @@ class IsUserBanned
     public function handle(Request $request, Closure $next): Response
     {
         if ($this->userAuthService->isUserBanned() === true) {
-            return response()->json(['message' => 'You has been banned.']);
+            return response()->json(['message' => 'You has been banned.'])->setStatusCode(403);
         }
 
         return $next($request);

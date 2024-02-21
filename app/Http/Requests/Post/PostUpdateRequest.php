@@ -4,14 +4,34 @@ namespace App\Http\Requests\Post;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use OpenApi\Attributes as OA;
 
 class PostUpdateRequest extends FormRequest
 {
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, ValidationRule|array|string>
      */
+    #[OA\RequestBody(
+        request: 'PostUpdateRequest',
+        required: true,
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: 'title',
+                    type: 'string',
+                ),
+                new OA\Property(
+                    property: 'description',
+                    type: 'string',
+                ),
+            ],
+            type: 'object',
+            example: [
+                'title'         => 'Lorem ipsum dolor',
+                'description'   => 'Etiam bibendum urna nec velit venenatis ultrices.',
+            ],
+        ),
+    )]
     public function rules(): array
     {
         return [
@@ -21,6 +41,9 @@ class PostUpdateRequest extends FormRequest
         ];
     }
 
+    /**
+     * @return void
+     */
     protected function prepareForValidation(): void
     {
         $this->merge([
