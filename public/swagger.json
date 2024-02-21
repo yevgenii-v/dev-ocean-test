@@ -1,238 +1,2143 @@
 {
-    "swagger": "2.0",
+    "openapi": "3.0.0",
     "info": {
-        "title": "feature.proto",
-        "version": "version not set"
+        "title": "dev-ocean-api",
+        "version": "0.1"
     },
-    "schemes": [
-        "http",
-        "https"
-    ],
-    "consumes": [
-        "application/json"
-    ],
-    "produces": [
-        "application/json"
+    "servers": [
+        {
+            "url": "http://172.18.0.1:86/api/"
+        }
     ],
     "paths": {
-        "/ops/features": {
-            "get": {
-                "summary": "GET /ops/features",
-                "operationId": "ListFeatures",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/featureListFeaturesResponse"
-                        }
-                    }
-                },
+        "/v1/admin/comments/{id}": {
+            "delete": {
                 "tags": [
-                    "Generic"
-                ]
-            }
-        },
-        "/ops/features/{uuid}": {
-            "put": {
-                "summary": "PUT /ops/features/:uuid",
-                "operationId": "UpdateFeature",
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/featureUpdateFeatureResponse"
-                        }
-                    }
-                },
+                    "Admin Panel"
+                ],
+                "summary": "Permanently delete a comment.",
+                "operationId": "f3fbd4d5304cac88d4ec09f70b4aacc3",
                 "parameters": [
                     {
-                        "name": "uuid",
+                        "name": "id",
                         "in": "path",
-                        "required": true,
-                        "type": "string",
-                        "format": "string"
-                    },
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
+                        "description": "Comment ID",
                         "schema": {
-                            "$ref": "#/definitions/protobufStruct"
+                            "type": "int"
                         }
                     }
                 ],
+                "responses": {
+                    "204": {
+                        "description": "",
+                        "headers": {
+                            "cache-control": {
+                                "description": "no-cache,private",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": null
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Validation"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/admin/posts": {
+            "get": {
                 "tags": [
-                    "Generic"
+                    "Admin Panel"
+                ],
+                "summary": "Get one hundred posts with trashed by the last ID",
+                "operationId": "29547f08fd336158f3d0634fe4adc018",
+                "parameters": [
+                    {
+                        "name": "lastId",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Post"
+                                        },
+                                        "lastId": {
+                                            "type": "integer",
+                                            "example": 100
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Validation"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/admin/posts/{id}": {
+            "get": {
+                "tags": [
+                    "Admin Panel"
+                ],
+                "summary": "Show information about the post include trashed with comments.",
+                "operationId": "51da057bfced7b4c5d96d54336bcdd01",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post ID",
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PostWithComments"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post doesn't not exist.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Validation"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Panel"
+                ],
+                "summary": "Permanent delete post.",
+                "operationId": "e793df3180618f9653a9fb7e685b4faa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "",
+                        "headers": {
+                            "cache-control": {
+                                "description": "no-cache,private",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": null
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post doesn't  exist.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/admin/users/{user}/ban": {
+            "post": {
+                "tags": [
+                    "Admin Panel"
+                ],
+                "summary": "To ban the user.",
+                "description": "Ban a user.",
+                "operationId": "abb3b6b10cb86eebf59410874f7e8b27",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "",
+                        "headers": {
+                            "cache-control": {
+                                "description": "no-cache,private",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": null
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "examples": {
+                                    "Self ban": {
+                                        "summary": "",
+                                        "description": "",
+                                        "value": {
+                                            "message": "You can't ban yourself!",
+                                            "code": 400
+                                        }
+                                    },
+                                    "User is banned": {
+                                        "summary": "",
+                                        "description": "",
+                                        "value": {
+                                            "message": "This user is already banned.",
+                                            "code": 400
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "The user doesn't have permission.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "message": "Permission Denied.",
+                                    "code": 403
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post doesn't belong to current user or not exist.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/admin/users/{user}/restore": {
+            "post": {
+                "tags": [
+                    "Admin Panel"
+                ],
+                "summary": "To unban the user.",
+                "description": "Unban a user.",
+                "operationId": "99e1046b15ce03fb4f8d858e94506904",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AdminUser"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "message": "This user isn't banned.",
+                                    "code": 400
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Error: Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Permission Denied."
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Create a new user.",
+                "operationId": "3932d2c8bad547ad03e75d30a7bca311",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/UserRegisterRequest"
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You are logged in already."
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Validation"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Enter to your account.",
+                "operationId": "268f05a6d83a13e1da762571fea969be",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/LoginRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "Bearer": {
+                                            "$ref": "#/components/schemas/Bearer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Credentials do not match."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You are logged in already."
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Validation"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/profile": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Shows your profile.",
+                "operationId": "ebdd19f6563ee215399f6e23933fef8c",
+                "responses": {
+                    "200": {
+                        "description": "Shows user profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "message": "Unauthenticated."
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout and revoke user token.",
+                "operationId": "41de62ba059f25f3cc3255864519dff6",
+                "responses": {
+                    "200": {
+                        "description": "Logout user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "User was logged out."
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthenticated."
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/comments": {
+            "post": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Create a new comment.",
+                "operationId": "38c9c8b0bb48245bf24d815c4c171a2c",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/CommentStoreRequest"
+                },
+                "responses": {
+                    "204": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Comment"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "examples": {
+                                    "The user is banned": {
+                                        "summary": "",
+                                        "value": {
+                                            "message": "You has been banned."
+                                        }
+                                    },
+                                    "The user has'nt right permissions.": {
+                                        "summary": "",
+                                        "value": {
+                                            "message": "Permission denied."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Validation"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/posts": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Get one hundred posts by the last ID",
+                "description": "Display a listing of the posts.",
+                "operationId": "91995d0f0a9ac68d84f523c4e86c8920",
+                "parameters": [
+                    {
+                        "name": "lastId",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Post"
+                                        },
+                                        "lastId": {
+                                            "type": "integer",
+                                            "example": 100
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Validation"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Create a new post.",
+                "description": "Store a newly created post in storage.",
+                "operationId": "500807067e2dc4141e792a62b806ca8d",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/PostStoreRequest"
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Post"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Validation"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/posts/{id}": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Show information about the post with comments.",
+                "description": "Display the specified post.",
+                "operationId": "4869c9710b245e4550cb97c821656107",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post ID",
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PostWithComments"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "The post is not exists.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Validation"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Permanent delete post.",
+                "description": "Remove the specified post from storage.",
+                "operationId": "c79664bf24bb4ea0b5fe290f81a4593f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "",
+                        "headers": {
+                            "cache-control": {
+                                "description": "no-cache,private",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": null
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post doesn't belong to current user or not exist.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Update a post.",
+                "description": "Update the specified post in storage.",
+                "operationId": "335a62a702ec15aa17d9b6a54701c11c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/PostUpdateRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Post"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post doesn't belong to current user or not exist.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Validation"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/posts/{id}/soft-delete": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Soft delete post.",
+                "description": "Hide the specified post from storage.",
+                "operationId": "a950fab2fbdc6cf7259775565e0e7abb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "",
+                        "headers": {
+                            "cache-control": {
+                                "description": "no-cache,private",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": null
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post doesn't belong to current user or not exist.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/posts/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Restore the soft deleted post.",
+                "description": "Restore the post from soft delete.",
+                "operationId": "79cc9a6cfaa0d3c3a1ee8aa0cbe9816b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Post"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post doesn't belong to current user or not soft deleted.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/posts/{id}/publish": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Publish a post.",
+                "description": "Publish the post that belongs to the current user.",
+                "operationId": "7b19c69f300d0d3a2232024a176e27e0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Post"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post is published already.",
+                                        "code": 400
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post doesn't belong to current user or not soft deleted.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/posts/{id}/unpublish": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Unpublish a post.",
+                "description": "Unpublish the post that belongs to the current user.",
+                "operationId": "d3124b510eef6dd82f82ea7ff8b4d32f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "",
+                        "headers": {
+                            "cache-control": {
+                                "description": "no-cache,private",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": null
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post is published already.",
+                                        "code": 400
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "Unauthorized."
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User banned message.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MiddlewareError"
+                                },
+                                "example": {
+                                    "message": "You has been banned."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                },
+                                "example": {
+                                    "data": {
+                                        "message": "This post doesn't belong to current user or not soft deleted.",
+                                        "code": 404
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
                 ]
             }
         }
     },
-    "definitions": {
-        "featureFeature": {
-            "type": "object",
-            "properties": {
-                "app_id": {
-                    "type": "string",
-                    "format": "string"
-                },
-                "args": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "format": "string"
-                    }
-                },
-                "enabled": {
-                    "type": "boolean",
-                    "format": "boolean"
-                },
-                "extra_data": {
-                    "$ref": "#/definitions/protobufStruct",
-                    "title": "extra data can be any json data\nFor parnter(特权专区) feature it shold be\nrepeated PartnerExtra extra_data = 10"
-                },
-                "method": {
-                    "$ref": "#/definitions/featureFeatureFetchMethod"
-                },
-                "requirements": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "format": "string"
-                    }
-                },
-                "type": {
-                    "$ref": "#/definitions/featureFeatureType"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "uuid": {
-                    "type": "string",
-                    "format": "string"
-                }
-            }
-        },
-        "featureFeatureFetchMethod": {
-            "type": "string",
-            "enum": [
-                "UNKNOWN_METHOD",
-                "GET"
-            ],
-            "default": "UNKNOWN_METHOD"
-        },
-        "featureFeatureType": {
-            "type": "string",
-            "enum": [
-                "UNKNOWN_FEATURE_TYPE",
-                "URL"
-            ],
-            "default": "UNKNOWN_FEATURE_TYPE"
-        },
-        "featureListFeaturesRequest": {
-            "type": "object"
-        },
-        "featureListFeaturesResponse": {
-            "type": "object",
-            "properties": {
-                "features": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/featureFeature"
-                    }
-                }
-            }
-        },
-        "featureUpdateFeatureRequest": {
-            "type": "object",
-            "properties": {
-                "extra_data": {
-                    "$ref": "#/definitions/protobufStruct"
-                },
-                "token": {
-                    "type": "string",
-                    "format": "string"
-                },
-                "uuid": {
-                    "type": "string",
-                    "format": "string"
-                }
-            }
-        },
-        "featureUpdateFeatureResponse": {
-            "type": "object",
-            "properties": {
-                "feature": {
-                    "$ref": "#/definitions/featureFeature"
-                }
-            }
-        },
-        "protobufListValue": {
-            "type": "object",
-            "properties": {
-                "values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/protobufValue"
+    "components": {
+        "schemas": {
+            "AdminPost": {
+                "description": "Show information about the post via admin role.",
+                "properties": {
+                    "id": {
+                        "type": "integer"
                     },
-                    "description": "Repeated field of dynamically typed values."
-                }
-            },
-            "description": "`ListValue` is a wrapper around a repeated field of values.\n\nThe JSON representation for `ListValue` is JSON array."
-        },
-        "protobufNullValue": {
-            "type": "string",
-            "enum": [
-                "NULL_VALUE"
-            ],
-            "default": "NULL_VALUE",
-            "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
-        },
-        "protobufStruct": {
-            "type": "object",
-            "properties": {
-                "fields": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/protobufValue"
+                    "title": {
+                        "type": "string"
                     },
-                    "description": "Unordered map of dynamically typed values."
+                    "description": {
+                        "type": "string"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "publishedAt": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    },
+                    "deletedAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "example": {
+                    "id": 1,
+                    "title": "illo aut quae",
+                    "description": "Cupiditate eos reprehenderit alias",
+                    "user": {
+                        "id": 3,
+                        "login": "John_Doe",
+                        "email": "john.doe@gmail.com",
+                        "profilePhoto": null,
+                        "createdAt": "2024-02-19 20:35:36"
+                    },
+                    "publishedAt": "2024-02-19 23:02:56",
+                    "createdAt": "2024-02-19 23:02:33",
+                    "deletedAt": null
                 }
             },
-            "description": "`Struct` represents a structured data value, consisting of fields\nwhich map to dynamically typed values. In some languages, `Struct`\nmight be supported by a native representation. For example, in\nscripting languages like JS a struct is represented as an\nobject. The details of that representation are described together\nwith the proto support for the language.\n\nThe JSON representation for `Struct` is JSON object."
+            "AdminUser": {
+                "description": "Show information about the user via admin role",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "login": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "profilePhoto": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "example": {
+                    "id": 3,
+                    "login": "John_Doe",
+                    "email": "john.doe@gmail.com",
+                    "profilePhoto": null,
+                    "createdAt": "2024-02-19 20:35:36",
+                    "updatedAt": "2024-02-19 20:35:36",
+                    "inBanned": false
+                }
+            },
+            "ChildrenComment": {
+                "description": "Show information about the parent and children comments.",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "login": {
+                        "type": "string"
+                    },
+                    "body": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    },
+                    "comments": {
+                        "$ref": "#/components/schemas/ChildrenComment"
+                    }
+                },
+                "type": "object"
+            },
+            "Comment": {
+                "description": "Show information about created comment.",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "parentId": {
+                        "type": "integer"
+                    },
+                    "postId": {
+                        "type": "integer"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "body": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "example": {
+                    "id": 1,
+                    "parentId": null,
+                    "postId": 2,
+                    "user": {
+                        "id": 3,
+                        "login": "John_Doe",
+                        "email": "john.doe@gmail.com",
+                        "profilePhoto": null,
+                        "createdAt": "2024-02-19 20:35:36"
+                    },
+                    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                    "createdAt": "2024-02-18 19:46:10"
+                }
+            },
+            "Error": {
+                "description": "Show exception error.",
+                "properties": {
+                    "message": {
+                        "description": "Show Exception message and code.",
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "MiddlewareError": {
+                "description": "Middleware error.",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Validation": {
+                "description": "Shows validation errors.",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "errors": {
+                        "description": "Each key describes error message.",
+                        "properties": {
+                            "query or path name": {
+                                "type": "array",
+                                "items": {}
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object",
+                "example": {
+                    "message": "The email field must be a valid email address. (and 3 more errors)",
+                    "errors": {
+                        "email": [
+                            "The email field must be a valid email address."
+                        ],
+                        "password": [
+                            "The password field confirmation does not match.",
+                            "The password field must contain at least one uppercase and one lowercase letter.",
+                            "The password field must contain at least one number."
+                        ]
+                    }
+                }
+            },
+            "Post": {
+                "description": "Show information about the post.",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "publishedAt": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "example": {
+                    "id": 1,
+                    "title": "illo aut quae",
+                    "description": "Cupiditate eos reprehenderit alias",
+                    "user": {
+                        "id": 3,
+                        "login": "John_Doe",
+                        "email": "john.doe@gmail.com",
+                        "profilePhoto": null,
+                        "createdAt": "2024-02-19 20:35:36"
+                    },
+                    "publishedAt": "2024-02-19 23:02:56",
+                    "createdAt": "2024-02-19 23:02:33"
+                }
+            },
+            "PostWithComments": {
+                "description": "Show information about the post with comments.",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "publishedAt": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    },
+                    "comments": {
+                        "$ref": "#/components/schemas/ChildrenComment"
+                    }
+                },
+                "type": "object",
+                "example": [
+                    {
+                        "id": 1,
+                        "title": "illo aut quae",
+                        "description": "Cupiditate eos reprehenderit alias",
+                        "user": {
+                            "id": 3,
+                            "login": "John_Doe",
+                            "email": "john.doe@gmail.com",
+                            "profilePhoto": null,
+                            "createdAt": "2024-02-19 20:35:36"
+                        },
+                        "publishedAt": "2024-02-19 23:02:56",
+                        "createdAt": "2024-02-19 23:02:33",
+                        "comments": [
+                            {
+                                "id": 1,
+                                "login": "John_Doe",
+                                "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                                "createdAt": "2024-02-19 10:02:33",
+                                "comments": [
+                                    {
+                                        "id": 3,
+                                        "login": "Jake_Doe",
+                                        "body": "Mauris sem dui, semper at lacinia ac, elementum id leo.",
+                                        "createdAt": "2024-02-19 10:10:13",
+                                        "comments": [
+                                            {
+                                                "id": 5,
+                                                "login": "John_Doe",
+                                                "body": "Curabitur ut accumsan purus, quis porta erat.",
+                                                "createdAt": "2024-02-19 10:20:00",
+                                                "comments": []
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "id": 4,
+                                        "login": "Jane_Doe",
+                                        "body": "Praesent fringilla aliquet sem id ultrices.",
+                                        "createdAt": "2024-02-19 10:15:20",
+                                        "comments": []
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 2,
+                                "login": "Jane_Doe",
+                                "body": "Etiam bibendum urna nec velit venenatis ultrices.",
+                                "createdAt": "2024-02-19 10:05:10",
+                                "comments": [
+                                    {
+                                        "id": 6,
+                                        "login": "John_Doe",
+                                        "body": "Vestibulum aliquet venenatis nunc, eu laoreet lectus lobortis in.",
+                                        "createdAt": "2024-02-19 10:25:00",
+                                        "comments": []
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 7,
+                                "login": "John_Doe",
+                                "body": "Vivamus a enim laoreet, mattis ipsum sit amet, tincidunt dui.",
+                                "createdAt": "2024-02-19 10:35:01",
+                                "comments": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            "Bearer": {
+                "description": "Shows Bearer token",
+                "properties": {
+                    "accessToken": {
+                        "description": "Bearer token",
+                        "type": "string"
+                    },
+                    "token": {
+                        "description": "Token info",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "user_id": {
+                                "type": "integer"
+                            },
+                            "client_id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "scopes": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {}
+                                }
+                            },
+                            "revoked": {
+                                "type": "boolean"
+                            },
+                            "created_at": {
+                                "type": "string"
+                            },
+                            "updated_at": {
+                                "type": "string"
+                            },
+                            "expires_at": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "description": "Show information about the user",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "login": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "profilePhoto": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "example": {
+                    "id": 3,
+                    "login": "John_Doe",
+                    "email": "john.doe@gmail.com",
+                    "profilePhoto": null,
+                    "createdAt": "2024-02-19 20:35:36"
+                }
+            }
         },
-        "protobufValue": {
-            "type": "object",
-            "properties": {
-                "bool_value": {
-                    "type": "boolean",
-                    "format": "boolean",
-                    "description": "Represents a boolean value."
-                },
-                "list_value": {
-                    "$ref": "#/definitions/protobufListValue",
-                    "description": "Represents a repeated `Value`."
-                },
-                "null_value": {
-                    "$ref": "#/definitions/protobufNullValue",
-                    "description": "Represents a null value."
-                },
-                "number_value": {
-                    "type": "number",
-                    "format": "double",
-                    "description": "Represents a double value."
-                },
-                "string_value": {
-                    "type": "string",
-                    "format": "string",
-                    "description": "Represents a string value."
-                },
-                "struct_value": {
-                    "$ref": "#/definitions/protobufStruct",
-                    "description": "Represents a structured value."
+        "requestBodies": {
+            "LoginRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "email": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "example": {
+                            "email": "",
+                            "password": ""
+                        }
+                    }
                 }
             },
-            "description": "`Value` represents a dynamically typed value which can be either\nnull, a number, a string, a boolean, a recursive struct value, or a\nlist of values. A producer of value is expected to set one of that\nvariants, absence of any variant indicates an error.\n\nThe JSON representation for `Value` is JSON value."
+            "UserRegisterRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "login": {
+                                    "description": "Create a new user.",
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                },
+                                "password_confirmation": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "example": {
+                            "login": "",
+                            "email": "",
+                            "password": "",
+                            "password_confirmation": ""
+                        }
+                    }
+                }
+            },
+            "CommentStoreRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "parentId": {
+                                    "description": "Get the validation rules that apply to the request.",
+                                    "type": "integer"
+                                },
+                                "postId": {
+                                    "type": "integer"
+                                },
+                                "body": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "examples": {
+                            "No parent ID": {
+                                "summary": "",
+                                "value": {
+                                    "parentId": null,
+                                    "postId": 2,
+                                    "body": "Donec eu mattis ligula, sit amet vehicula tortor."
+                                }
+                            },
+                            "With parent ID": {
+                                "summary": "",
+                                "value": {
+                                    "parentId": 6,
+                                    "postId": 2,
+                                    "body": "Donec eu mattis ligula, sit amet vehicula tortor."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "PostStoreRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "title": {
+                                    "description": "Get the validation rules that apply to the request.",
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "example": {
+                            "title": "Lorem ipsum dolor",
+                            "description": "Etiam bibendum urna nec velit venenatis ultrices."
+                        }
+                    }
+                }
+            },
+            "PostUpdateRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "title": {
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "example": {
+                            "title": "Lorem ipsum dolor",
+                            "description": "Etiam bibendum urna nec velit venenatis ultrices."
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "bearerAuth",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
         }
     }
 }

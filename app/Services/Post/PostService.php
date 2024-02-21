@@ -61,7 +61,7 @@ class PostService
         $post = $this->postRepository->getWithCommentsById($id);
 
         if ($post === null) {
-            throw new Exception('This post doesn\'t belong to current user or not exist.', 404);
+            throw new Exception('The post is not exists.', 404);
         }
 
         return $post;
@@ -146,7 +146,9 @@ class PostService
      */
     public function restore(int $id): ?PostIterator
     {
-        if ($this->isPostBelongsToUser($id) === false) {
+        if (
+            $this->isPostBelongsToUser($id) === false
+        ) {
             throw new Exception('This post doesn\'t belong to current user or not soft deleted.', 404);
         }
 

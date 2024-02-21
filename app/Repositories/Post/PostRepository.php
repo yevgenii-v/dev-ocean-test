@@ -210,7 +210,7 @@ class PostRepository
      */
     public function restoreForUser(int $id): void
     {
-        Post::onlyTrashed()
+        Post::withTrashed()
             ->find($id)
             ->where('user_id', '=', $this->userAuthService->getUserIdByToken())
             ->restore();

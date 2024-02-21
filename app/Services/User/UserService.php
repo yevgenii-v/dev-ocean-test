@@ -50,7 +50,7 @@ class UserService
         }
 
         if ($user->getIsBanned() === true) {
-            throw new Exception('This user is already banned.', 200);
+            throw new Exception('This user is already banned.', 400);
         }
 
         if ($user->getId() === self::GENERAL_ADMIN_ID) {
