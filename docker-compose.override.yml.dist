@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+
+  dev_ocean_api:
+    user: "www-data:www-data"
+    build:
+      context: .
+      dockerfile: docker/php-fpm/Dockerfile
+      args:
+        ENVIRONMENT: development
+        GROUP_ID: 1000
+        USER_ID: 1000
+    ports:
+      - "9005:9001"
+
+  dev_ocean_db:
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3309:3306"
+
+  dev_ocean_nginx_api:
+    ports:
+      - "86:80"
+
+  dev_ocean_swagger_ui:
+    ports:
+      - "8092:8080"
+    environment:
+      URL: http://172.18.0.1:86/api/swagger
+
+networks:
+  dev_ocean_networks:
+    external: true
+    name: dev_ocean_networks
+    driver: bridge
+
+volumes:
+  dev_ocean_db_storage:
+    name: dev_ocean_db_storage
+    driver: local
